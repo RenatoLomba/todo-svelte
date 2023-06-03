@@ -1,11 +1,14 @@
 <script lang="ts">
-  import { type ToDo } from '../models/todo';
   import FaCheck from 'svelte-icons/fa/FaCheck.svelte';
   import FaTrashAlt from 'svelte-icons/fa/FaTrashAlt.svelte';
+  import classNames from 'classnames';
+
+  import { type ToDo } from '../models/todo';
 
   export let todosList: ToDo[];
 
-  export let onCheckButtonClick: (todo: ToDo) => void;
+  export let onCheckButtonClick: (id: string) => void;
+  export let onDeleteButtonClick: (id: string) => void;
 </script>
 
 <div class="flex flex-col gap-4 mt-10">
@@ -17,16 +20,26 @@
       "
     >
       <div class="flex-1">
-        <h2 class="text-lg text-pink-400 font-medium leading-8">
+        <h2
+          class={classNames('text-lg text-pink-400 font-medium leading-8', {
+            'line-through': todo.isFinished,
+          })}
+        >
           {todo.title}
         </h2>
-        <p>{todo.description}</p>
+        <p
+          class={classNames({
+            'line-through': todo.isFinished,
+          })}
+        >
+          {todo.description}
+        </p>
       </div>
 
       <div class="flex items-center gap-2">
         {#if !todo.isFinished}
           <button
-            on:click={() => onCheckButtonClick(todo)}
+            on:click={() => onCheckButtonClick(todo.id)}
             type="button"
             class="
               p-2 rounded-md text-green-500 transition-colors
@@ -44,7 +57,11 @@
           </button>
         {/if}
 
-        <button type="button" class="bg-red-500 p-2 rounded-md">
+        <button
+          on:click={() => onDeleteButtonClick(todo.id)}
+          type="button"
+          class="bg-red-500 p-2 rounded-md"
+        >
           <div class="text-slate-50 w-4 h-4">
             <FaTrashAlt />
           </div>
