@@ -3,8 +3,22 @@
   import ToDoForm from './components/ToDoForm.svelte';
   import { type ToDo } from './models/todo';
   import { type ToDoFormFields } from './models/todo-form-fields';
+  import { todosListLocalStorageName } from './models/enums/todos-list-localstorage-name';
 
-  let todosList: ToDo[] = [];
+  function getTodosListFromLocalStorage() {
+    const todosListString = localStorage.getItem(todosListLocalStorageName);
+
+    if (todosListString) {
+      return JSON.parse(todosListString);
+    }
+    return [];
+  }
+
+  let todosList: ToDo[] = getTodosListFromLocalStorage();
+
+  $: {
+    localStorage.setItem(todosListLocalStorageName, JSON.stringify(todosList));
+  }
 
   function handleFormSubmit({ title, description }: ToDoFormFields): void {
     const newTodo: ToDo = {
